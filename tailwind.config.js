@@ -10,6 +10,9 @@ export default {
         './resources/js/**/*.jsx',
     ],
 
+    // Enable class-based dark mode
+    darkMode: 'class', 
+
     theme: {
         extend: {
             fontFamily: {
