@@ -31,7 +31,8 @@ class ReactionController extends Controller
         // Only notify if the reaction is from a different user than the chirp owner
         if ($chirp->user_id !== Auth::id()) {
             Notification::create([
-                'user_id' => $chirp->user_id,    // Notify the chirp owner
+                'user_id' => $chirp->user_id,     // Notify the chirp owner
+                'notifier_id' => Auth::id(),      // The user who made the reaction
                 'type' => 'reaction',
                 'chirp_id' => $chirpId,
                 'is_read' => false,
