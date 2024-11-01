@@ -11,9 +11,9 @@ class NotificationController extends Controller
     public function index()
     {
         $notifications = Notification::where('user_id', Auth::id())
-                                     ->where('is_read', false)
-                                     ->with('user') // Load related user data
-                                     ->get();
+                             ->where('is_read', false)
+                             ->with('notifier') // Load related notifier data
+                             ->get();
 
         return response()->json($notifications);
     }

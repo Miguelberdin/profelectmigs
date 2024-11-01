@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // User to be notified
+            $table->foreignId('notifier_id')->constrained('users')->onDelete('cascade');
             $table->string('type'); // 'reaction' or 'comment'
             $table->foreignId('chirp_id')->constrained()->onDelete('cascade');
             $table->boolean('is_read')->default(false);

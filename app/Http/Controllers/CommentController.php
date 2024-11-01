@@ -26,6 +26,7 @@ class CommentController extends Controller
         if ($chirp->user_id !== auth()->id()) {
             Notification::create([
                 'user_id' => $chirp->user_id,   // Notify the chirp owner
+                'notifier_id' => auth()->id(),  // The user who made the comment
                 'type' => 'comment',
                 'chirp_id' => $chirp->id,
                 'is_read' => false,

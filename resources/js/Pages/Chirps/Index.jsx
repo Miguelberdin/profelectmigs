@@ -147,32 +147,36 @@ return (
                         <div className="absolute right-0 mt-2 w-64 sm:w-72 bg-white rounded-md shadow-lg z-50 p-2 max-h-72 overflow-y-auto">
                             <h2 className="text-lg font-bold mb-2">Notifications</h2>
                             {notifications.length > 0 ? (
-                                notifications.map(notification => (
-                                    <div
-                                        key={notification.id}
-                                        className="flex items-start p-2 border-b last:border-b-0 hover:bg-gray-100 cursor-pointer"
-                                        onClick={() => markNotificationAsRead(notification.id)}
-                                    >
-                                        <div className="mr-3">
-                                            {notification.type === 'reaction' ? (
-                                                <FaThumbsUp className="text-blue-500" />
-                                            ) : (
-                                                <FaRegComment className="text-green-500" />
-                                            )}
-                                        </div>
-                                        <div>
-                                            <p className="text-gray-800">
-                                                <span className="font-semibold">{notification.user.name}</span> {notification.type === 'reaction' ? 'reacted to' : 'commented on'} your chirp.
-                                            </p>
-                                            <span className="text-gray-500 text-sm">{moment(notification.created_at).fromNow()}</span>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="p-2 text-gray-500 text-center">
-                                    No new notifications
-                                </div>
-                            )}
+    notifications.map(notification => (
+        <div
+            key={notification.id}
+            className="flex items-start p-2 border-b last:border-b-0 hover:bg-gray-100 cursor-pointer"
+            onClick={() => markNotificationAsRead(notification.id)}
+        >
+            <div className="mr-3">
+                {notification.type === 'reaction' ? (
+                    <FaThumbsUp className="text-blue-500" />
+                ) : (
+                    <FaRegComment className="text-green-500" />
+                )}
+            </div>
+            <div>
+                <p className="text-gray-800">
+                    <span className="font-semibold">
+                        {notification.notifier && notification.notifier.name ? notification.notifier.name : 'Unknown User'}
+                    </span>{" "}
+                    {notification.type === 'reaction' ? 'reacted to' : 'commented on'} your chirp.
+                </p>
+                <span className="text-gray-500 text-sm">{moment(notification.created_at).fromNow()}</span>
+            </div>
+        </div>
+    ))
+) : (
+    <div className="p-2 text-gray-500 text-center">
+        No new notifications
+    </div>
+)}
+
                         </div>
                     )}
                 </div>
