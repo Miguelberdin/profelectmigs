@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('notifier_id')->constrained('users')->onDelete('cascade');
             $table->string('type'); // 'reaction' or 'comment'
             $table->foreignId('chirp_id')->constrained()->onDelete('cascade');
+            $table->string('reaction_type')->nullable(); // The type of reaction (e.g., 'like', 'love', etc.)
             $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
