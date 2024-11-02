@@ -17,7 +17,11 @@ class ChirpController extends Controller
     public function index(): Response
     {
         return Inertia::render('Chirps/Index', [
-            'chirps' => Chirp::with('user:id,name')->latest()->get(),
+            'chirps' => Chirp::with([
+                'user:id,name',
+                'reactions.user:id,name',  // Load reactions with user details
+                'comments.user:id,name'    // Load comments with user details
+            ])->latest()->get(),
         ]);
     }
 
