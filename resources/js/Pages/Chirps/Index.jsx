@@ -137,7 +137,7 @@ export default function Index({ auth, chirps }) {
                     <h1 className="text-4xl font-extrabold text-gray-800 dark:text-gray-100">Chirps</h1>
                     <div className="relative">
                         <button onClick={toggleNotificationPopup} className="relative hover:text-blue-500 dark:hover:text-yellow-400 transition-colors hover:scale-110 transform duration-200">
-                            <FaBell className="text-gray-500 dark:text-gray-300 text-3xl" />
+                            <FaBell className="text-gray-500 dark:text-gray-300 text-3xl hover:text-blue-500 dark:hover:text-blue-400" />
                             <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-sm px-1">
                                 {notifications.length > 0 ? notifications.length : ''}
                             </span>
@@ -230,7 +230,7 @@ export default function Index({ auth, chirps }) {
                     {chirps.map(chirp => (
                         <motion.div
                             key={chirp.id}
-                            className="p-8 border-b bg-gray-50 dark:bg-gray-900 hover:bg-white dark:hover:bg-gray-800 rounded-lg transition-shadow shadow-md hover:shadow-lg"
+                            className="p-8 border-b bg-gray-200 dark:bg-gray-950 hover:bg-gray-200 dark:hover:bg-gray-950 rounded-lg transition-shadow shadow-md hover:shadow-lg"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.5 }}
@@ -280,7 +280,7 @@ export default function Index({ auth, chirps }) {
                                         </motion.div>
                                     )}
                                 </div>
-                                <button onClick={() => fetchComments(chirp.id)} className="flex items-center text-gray-500 dark:text-gray-300 hover:text-green-500 dark:hover:text-yellow-400 transition-colors">
+                                <button onClick={() => fetchComments(chirp.id)} className="flex items-center text-gray-500 dark:text-gray-300 hover:text-green-500 dark:hover:text-green-400 transition-colors">
                                     <FaRegComment className="mr-1" /> Comment ({comments[chirp.id]?.length || 0})
                                 </button>
                             </div>
