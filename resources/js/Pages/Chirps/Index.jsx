@@ -4,11 +4,11 @@ import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { useForm, Head } from '@inertiajs/react';
 import axios from 'axios';
-import { FaThumbsUp, FaHeart, FaRegComment, FaSadTear, FaSurprise, FaAngry, FaLaughBeam, FaBell } from 'react-icons/fa';
+import { FaThumbsUp, FaHeart, FaRegComment, FaSadTear, FaSurprise, FaAngry, FaLaughBeam, FaBell, FaEdit, FaTrash, FaEllipsisV } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import moment from 'moment';
 
-export default function Index({ auth, chirps }) {
+export default function Index({ auth, chirps: initialChirps }) {
     const { data, setData, post, processing, reset, errors } = useForm({ message: '' });
     const [isReactionPopupOpen, setIsReactionPopupOpen] = useState(null);
     const [reactions, setReactions] = useState({});
@@ -19,11 +19,16 @@ export default function Index({ auth, chirps }) {
     const [hoveredReaction, setHoveredReaction] = useState({});
     const [notifications, setNotifications] = useState([]);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-    const notificationPopupRef = useRef(null); // Add a ref for notification popup
+    const notificationPopupRef = useRef(null);
     const reactionPopupRef = useRef(null);
-    const [pressStart, setPressStart] = useState(null); // To track the start time of the press
-    const longPressThreshold = 500; // 500 ms for long press
-    const reactionPopupTimeout = useRef(null); // Store timeout to control when to show the popup
+    const [pressStart, setPressStart] = useState(null);
+    const longPressThreshold = 500;
+    const reactionPopupTimeout = useRef(null);
+    const [chirps, setChirps] = useState(initialChirps);
+    const [editData, setEditData] = useState({ message: '' });
+    const [editingChirpId, setEditingChirpId] = useState(null);
+    const [dropdownOpenId, setDropdownOpenId] = useState(null);
+    const dropdownRef = useRef(null);
 
     useEffect(() => {
         const initialReactions = {};
@@ -61,13 +66,79 @@ export default function Index({ auth, chirps }) {
 
     const markNotificationAsRead = async (id) => {
         await axios.patch(route('notifications.markAsRead', { id }));
-        fetchNotifications(); // Refresh notifications after marking as read
+        fetchNotifications();
     };
 
-    const submit = (e) => {
-        e.preventDefault();
-        post(route('chirps.store'), { onSuccess: () => reset() });
+    const handleEditToggle = (chirp) => {
+        setEditingChirpId(chirp.id);
+        setEditData({ message: chirp.message });
+        setDropdownOpenId(null);
     };
+
+
+    const handleEditSubmit = async (chirpId) => {
+        try {
+            const response = await axios.put(route('chirps.update', { chirp: chirpId }), { message: editData.message });
+
+            // Close edit mode
+            setEditingChirpId(null);
+
+            // Update the chirps list with the edited chirp, including the new updated_at timestamp
+            setChirps((prevChirps) =>
+                prevChirps.map((chirp) =>
+                    chirp.id === chirpId ? { ...chirp, ...response.data.chirp } : chirp
+                )
+            );
+        } catch (error) {
+            console.error('Error updating chirp:', error);
+        }
+    };
+
+
+    const handleDelete = async (chirpId) => {
+        try {
+            await axios.delete(route('chirps.destroy', { chirp: chirpId }));
+
+            // Remove the deleted chirp from the state
+            setChirps((prevChirps) => prevChirps.filter((chirp) => chirp.id !== chirpId));
+            setDropdownOpenId(null); // Close dropdown after delete
+        } catch (error) {
+            console.error('Error deleting chirp:', error);
+        }
+    };
+
+    const toggleDropdown = (chirpId) => {
+        setDropdownOpenId(dropdownOpenId === chirpId ? null : chirpId);
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpenId(null);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    const submit = async (e) => {
+        e.preventDefault();
+        try {
+            // Send chirp post request
+            const response = await axios.post(route('chirps.store'), data);
+
+            // Reset form input
+            reset();
+
+            // Add new chirp to the list at the top
+            setChirps([response.data.chirp, ...chirps]);
+        } catch (error) {
+            console.error('Error posting chirp:', error);
+        }
+    };
+
 
     const handleReaction = async (chirpId, type) => {
         try {
@@ -102,17 +173,17 @@ export default function Index({ auth, chirps }) {
             }
         }, longPressThreshold);
     };
-    
+
     const handleMouseUp = () => {
         setPressStart(null);
         clearTimeout(reactionPopupTimeout.current); // Clear timeout if press is released early
     };
-    
+
     const handleMouseLeave = () => {
         setPressStart(null);
         clearTimeout(reactionPopupTimeout.current); // Clear timeout if mouse leaves button early
     };
-    
+
     const closeReactionPopup = () => {
         setIsReactionPopupOpen(null);
     };
@@ -259,28 +330,81 @@ export default function Index({ auth, chirps }) {
                 <InputError message={errors.message} className="mt-2 dark:text-red-400" />
 
                 <div className="mt-8 space-y-8">
-                    {chirps.map(chirp => (
-                        <motion.div
-                            key={chirp.id}
-                            className="p-8 border-b bg-gray-200 dark:bg-gray-950 hover:bg-gray-200 dark:hover:bg-gray-950 rounded-lg transition-shadow shadow-md hover:shadow-lg"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5 }}
-                            whileHover={{ scale: 1.01 }}
-                        >
-                            <div className="mb-4 flex items-center justify-between">
+                    {chirps.map((chirp) => (
+                        <motion.div key={chirp.id} className="p-8 border-b bg-gray-200 dark:bg-gray-950 rounded-lg shadow-md">
+                            <div className="mb-4 flex justify-between items-center">
                                 <div className="flex items-center space-x-3">
-                                    <motion.div className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold"
-                                        whileHover={{ rotate: 10 }}>
+                                    {/* User avatar and name */}
+                                    <div className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
                                         {chirp.user.name[0]}
-                                    </motion.div>
+                                    </div>
                                     <div>
                                         <span className="font-semibold text-lg text-gray-700 dark:text-gray-200">{chirp.user.name}</span>
-                                        <div className="text-xs text-gray-500 dark:text-gray-400">{moment(chirp.created_at).fromNow()}</div>
+                                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                                            {moment(chirp.created_at).fromNow()}
+                                            {chirp.updated_at && chirp.updated_at !== chirp.created_at && (
+                                                <span className="text-xs ml-2 text-gray-500 dark:text-gray-400">
+                                                    (edited {moment(chirp.updated_at).fromNow()})
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
+
+                                {/* Edit and Delete Dropdown */}
+                                {chirp.user.id === auth.user.id && (
+                                    <div className="relative">
+                                        <button onClick={() => toggleDropdown(chirp.id)} className="text-gray-500 hover:text-gray-700">
+                                            <FaEllipsisV />
+                                        </button>
+                                        {dropdownOpenId === chirp.id && (
+                                            <div className="absolute right-0 mt-2 w-28 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 py-1">
+                                                <button
+                                                    onClick={() => handleEditToggle(chirp)}
+                                                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(chirp.id)}
+                                                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-500 dark:hover:bg-gray-700"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
-                            <p className="text-gray-800 dark:text-gray-300 text-lg mb-4">{chirp.message}</p>
+
+                            {/* Chirp Message or Edit Form */}
+                            {editingChirpId === chirp.id ? (
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        handleEditSubmit(chirp.id);
+                                    }}
+                                >
+                                    <textarea
+                                        value={editData.message}
+                                        className="w-full border-gray-300 rounded-md shadow-lg p-4 dark:bg-gray-900 dark:text-gray-100 dark:border-gray-700 resize-none"
+                                        rows="3"
+                                        onChange={(e) => setEditData({ message: e.target.value })}
+                                    ></textarea>
+                                    <div className="flex justify-end mt-2">
+                                        <PrimaryButton type="submit">Save</PrimaryButton>
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditingChirpId(null)}
+                                            className="ml-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            ) : (
+                                <p className="text-gray-800 dark:text-gray-300 text-lg mb-4">{chirp.message}</p>
+                            )}
 
                             <div className="flex items-center mt-4 space-x-6 relative">
                                 <div
