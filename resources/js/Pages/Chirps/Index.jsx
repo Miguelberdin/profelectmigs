@@ -20,6 +20,9 @@ export default function Index({ auth, chirps }) {
     const [notifications, setNotifications] = useState([]);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const reactionPopupRef = useRef(null);
+    const [pressStart, setPressStart] = useState(null); // To track the start time of the press
+    const longPressThreshold = 500; // 500 ms for long press
+    const reactionPopupTimeout = useRef(null); // Store timeout to control when to show the popup
 
     useEffect(() => {
         const initialReactions = {};
@@ -87,6 +90,30 @@ export default function Index({ auth, chirps }) {
             case 'angry': return 'text-red-700';
             default: return 'text-gray-500';
         }
+    };
+
+    const handleMouseDown = (chirpId) => {
+        setPressStart(Date.now());
+        // Start a timeout to trigger the popup after a long press
+        reactionPopupTimeout.current = setTimeout(() => {
+            if (Date.now() - pressStart >= longPressThreshold) {
+                setIsReactionPopupOpen(chirpId);
+            }
+        }, longPressThreshold);
+    };
+    
+    const handleMouseUp = () => {
+        setPressStart(null);
+        clearTimeout(reactionPopupTimeout.current); // Clear timeout if press is released early
+    };
+    
+    const handleMouseLeave = () => {
+        setPressStart(null);
+        clearTimeout(reactionPopupTimeout.current); // Clear timeout if mouse leaves button early
+    };
+    
+    const closeReactionPopup = () => {
+        setIsReactionPopupOpen(null);
     };
 
     const fetchComments = async (chirpId) => {
@@ -252,7 +279,10 @@ export default function Index({ auth, chirps }) {
 
                             <div className="flex items-center mt-4 space-x-6 relative">
                                 <div
-                                    onClick={() => setIsReactionPopupOpen(isReactionPopupOpen === chirp.id ? null : chirp.id)}
+                                    onMouseDown={() => handleMouseDown(chirp.id)}
+                                    onMouseUp={handleMouseUp}
+                                    onMouseLeave={handleMouseLeave}
+                                    onMouseEnter={() => setIsReactionPopupOpen(chirp.id)} // Show popup on hover
                                     className={`flex items-center cursor-pointer reaction-button ${reactionColor(userReactions[chirp.id])} hover:scale-105 transition-transform space-x-2`}
                                 >
                                     {userReactions[chirp.id] === 'like' && <FaThumbsUp className="mr-1" />}
