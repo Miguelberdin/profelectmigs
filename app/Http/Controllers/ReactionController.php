@@ -43,4 +43,20 @@ class ReactionController extends Controller
         // Return updated reactions for this chirp with user details
         return response()->json(['reactions' => Reaction::where('chirp_id', $chirpId)->with('user')->get()]);
     }
+
+    public function destroy($chirpId)
+    {
+        $reaction = Reaction::where('chirp_id', $chirpId)
+                            ->where('user_id', Auth::id())
+                            ->first();
+    
+        if ($reaction) {
+            $reaction->delete();
+            return response()->json(['message' => 'Reaction removed successfully.']);
+        }
+    
+        return response()->json(['message' => 'Reaction not found.'], 404);
+    }
+    
+
 }

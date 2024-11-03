@@ -158,13 +158,33 @@ export default function Index({ auth, chirps: initialChirps }) {
         try {
             const response = await axios.post(route('reactions.store', { chirp: chirpId }), { type });
             const updatedReactions = response.data.reactions;
-            setReactions(prevReactions => ({ ...prevReactions, [chirpId]: updatedReactions }));
-            setUserReactions(prevUserReactions => ({ ...prevUserReactions, [chirpId]: type }));
+            setReactions((prevReactions) => ({ ...prevReactions, [chirpId]: updatedReactions }));
+            setUserReactions((prevUserReactions) => ({ ...prevUserReactions, [chirpId]: type }));
             setIsReactionPopupOpen(null);  // Close popup after reaction is clicked
         } catch (error) {
             console.error('Error adding reaction:', error);
         }
     };
+
+    const removeReaction = async (chirpId) => {
+        try {
+            await axios.delete(route('reactions.destroy', { chirp: chirpId }));
+            // Update state to remove user's reaction
+            setReactions((prevReactions) => ({
+                ...prevReactions,
+                [chirpId]: prevReactions[chirpId].filter(reaction => reaction.user_id !== auth.user.id)
+            }));
+            setUserReactions((prevUserReactions) => {
+                const updatedUserReactions = { ...prevUserReactions };
+                delete updatedUserReactions[chirpId];
+                return updatedUserReactions;
+            });
+        } catch (error) {
+            console.error('Error removing reaction:', error);
+        }
+    };
+    
+    
 
     const reactionColor = (type) => {
         switch (type) {
@@ -426,6 +446,7 @@ export default function Index({ auth, chirps: initialChirps }) {
                                     onMouseUp={handleMouseUp}
                                     onMouseLeave={handleMouseLeave}
                                     onMouseEnter={() => setIsReactionPopupOpen(chirp.id)} // Show popup on hover
+                                    onClick={() => userReactions[chirp.id] ? removeReaction(chirp.id) : setIsReactionPopupOpen(chirp.id)}
                                     className={`flex items-center cursor-pointer reaction-button ${reactionColor(userReactions[chirp.id])} hover:scale-105 transition-transform space-x-2`}
                                 >
                                     {userReactions[chirp.id] === 'like' && <FaThumbsUp className="mr-1" />}
