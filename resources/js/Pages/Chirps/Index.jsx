@@ -19,6 +19,7 @@ export default function Index({ auth, chirps }) {
     const [hoveredReaction, setHoveredReaction] = useState({});
     const [notifications, setNotifications] = useState([]);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const notificationPopupRef = useRef(null); // Add a ref for notification popup
     const reactionPopupRef = useRef(null);
     const [pressStart, setPressStart] = useState(null); // To track the start time of the press
     const longPressThreshold = 500; // 500 ms for long press
@@ -144,6 +145,9 @@ export default function Index({ auth, chirps }) {
     };
 
     const handleOutsideClick = (event) => {
+        if (notificationPopupRef.current && !notificationPopupRef.current.contains(event.target)) {
+            setIsNotificationOpen(false);
+        }
         if (reactionPopupRef.current && !reactionPopupRef.current.contains(event.target)) {
             setIsReactionPopupOpen(null);
         }
@@ -171,6 +175,7 @@ export default function Index({ auth, chirps }) {
                         </button>
                         {isNotificationOpen && (
                             <motion.div
+                                ref={notificationPopupRef}
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
