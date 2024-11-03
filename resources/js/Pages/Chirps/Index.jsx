@@ -123,6 +123,20 @@ export default function Index({ auth, chirps: initialChirps }) {
         };
     }, []);
 
+    // Close dropdown if clicking outside of it
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpenId(null);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     const submit = async (e) => {
         e.preventDefault();
         try {
@@ -353,7 +367,7 @@ export default function Index({ auth, chirps: initialChirps }) {
 
                                 {/* Edit and Delete Dropdown */}
                                 {chirp.user.id === auth.user.id && (
-                                    <div className="relative">
+                                    <div ref={dropdownRef} className="relative">
                                         <button onClick={() => toggleDropdown(chirp.id)} className="text-gray-500 hover:text-gray-700">
                                             <FaEllipsisV />
                                         </button>
