@@ -345,7 +345,7 @@ export default function Index({ auth, chirps: initialChirps }) {
 
                 <div className="mt-8 space-y-8">
                     {chirps.map((chirp) => (
-                        <motion.div key={chirp.id} className="p-8 border-b bg-gray-200 dark:bg-gray-950 rounded-lg shadow-md">
+                        <motion.div key={chirp.id} className="p-8 border-b bg-gray-200 dark:bg-gray-950 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-lg">
                             <div className="mb-4 flex justify-between items-center">
                                 <div className="flex items-center space-x-3">
                                     {/* User avatar and name */}
@@ -504,7 +504,7 @@ export default function Index({ auth, chirps: initialChirps }) {
                                         />
                                         <motion.button
                                             onClick={() => handleCommentSubmit(chirp.id)}
-                                            className="bg-blue-500 text-white py-3 px-5 rounded-lg shadow-md whitespace-nowrap hover:bg-blue-600 transition-transform transform hover:scale-105"
+                                            className="flex items-center text-gray-100 dark:text-gray-300 bg-gray-800 dark:bg-gray-700 px-4 py-3 rounded-md shadow-sm hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
                                             whileTap={{ scale: 0.95 }}
                                         >
                                             Comment
