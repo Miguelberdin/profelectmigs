@@ -50,6 +50,7 @@ export default function Index({ auth, chirps: initialChirps }) {
     const fetchNotifications = async () => {
         try {
             const response = await axios.get(route('notifications.index'));
+            const sortedNotifications = response.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             setNotifications(response.data);
         } catch (error) {
             console.error("Error fetching notifications:", error);
