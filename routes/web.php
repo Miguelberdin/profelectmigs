@@ -8,6 +8,11 @@ use Inertia\Inertia;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\DashboardController;
+
+Route::get('/dashboard/stats', [DashboardController::class, 'stats'])
+    ->middleware('auth')
+    ->name('dashboard.stats');
 
 Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
