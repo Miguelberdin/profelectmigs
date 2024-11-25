@@ -78,6 +78,7 @@ export default function Dashboard({ auth }) {
             },
         ],
     };
+    
 
     return (
         <AuthenticatedLayout
@@ -136,19 +137,19 @@ export default function Dashboard({ auth }) {
                             {stats.latestComments.length > 0 ? (
                                 <>
                                     {stats.latestComments.slice(0, showAllComments ? stats.latestComments.length : 1).map((comment, index) => (
-                                        <div key={index} className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md relative">
-                                            <div className="flex justify-between items-center mb-2">
+                                        <div key={index} className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md">
+                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-1 sm:space-y-0 mb-2">
                                                 <div className="flex items-center space-x-3">
                                                     <div className="w-9 h-9 flex items-center justify-center rounded-full bg-blue-600 text-white font-bold text-lg">
                                                         {comment.user ? comment.user.charAt(0).toUpperCase() : 'U'}
                                                     </div>
                                                     <p className="font-semibold text-lg text-gray-800 dark:text-gray-200">{comment.user}</p>
                                                 </div>
-                                                <p className="text-sm text-gray-500 dark:text-gray-400">{comment.created_at ? moment(comment.created_at).format('MMMM Do YYYY, h:mm:ss a') : 'Unknown Date'}</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 sm:mt-0 sm:ml-4" style={{ marginLeft: '3rem' }}>
+                                                    {comment.created_at ? moment(comment.created_at).format('MMMM Do YYYY, h:mm:ss a') : 'Unknown Date'}
+                                                </p>
                                             </div>
-                                            <div className="pl-12">
-                                                <p className="text-gray-700 dark:text-gray-300 mb-2 leading-relaxed">{comment.content}</p>
-                                            </div>
+                                            <p className="text-gray-700 dark:text-gray-300 mt-3 leading-relaxed pl-12">{comment.content}</p>
                                         </div>
                                     ))}
                                     <button
@@ -163,6 +164,7 @@ export default function Dashboard({ auth }) {
                             )}
                         </div>
                     </div>
+
 
                     <div className="bg-gray-200 dark:bg-gray-800 mt-12 overflow-hidden shadow-sm sm:rounded-lg p-6">
                         <h3 className="text-2xl font-bold mb-6">Top Reactors</h3>

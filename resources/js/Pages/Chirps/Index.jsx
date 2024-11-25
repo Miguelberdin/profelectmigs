@@ -4,7 +4,7 @@ import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { useForm, Head } from '@inertiajs/react';
 import axios from 'axios';
-import { FaThumbsUp, FaHeart, FaRegComment, FaSadTear, FaSurprise, FaAngry, FaLaughBeam, FaBell, FaEdit, FaTrash, FaEllipsisV } from 'react-icons/fa';
+import { FaThumbsUp, FaHeart, FaRegComment, FaSadTear, FaSurprise, FaAngry, FaLaughBeam, FaBell, FaEllipsisV, FaPaperPlane } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import moment from 'moment';
 
@@ -184,8 +184,8 @@ export default function Index({ auth, chirps: initialChirps }) {
             console.error('Error removing reaction:', error);
         }
     };
-    
-    
+
+
 
     const reactionColor = (type) => {
         switch (type) {
@@ -378,7 +378,7 @@ export default function Index({ auth, chirps: initialChirps }) {
                                         <div className="text-xs text-gray-500 dark:text-gray-400">
                                             {moment(chirp.created_at).fromNow()}
                                             {chirp.updated_at && chirp.updated_at !== chirp.created_at && (
-                                                <span className="text-xs ml-2 text-gray-500 dark:text-gray-400">
+                                                <span className="text-xs ml-[-2px] sm:ml-2 text-gray-500 dark:text-gray-400 block sm:inline">
                                                     (edited {moment(chirp.updated_at).fromNow()})
                                                 </span>
                                             )}
@@ -516,7 +516,7 @@ export default function Index({ auth, chirps: initialChirps }) {
 
                             {openCommentSection === chirp.id && (
                                 <div className="mt-6 border-t pt-4 border-gray-300 dark:border-gray-700">
-                                    <div className="flex items-start space-x-3 mb-4">
+                                    <div className="flex items-center mb-4 space-x-2">
                                         <input
                                             type="text"
                                             placeholder="Add a comment..."
@@ -526,10 +526,11 @@ export default function Index({ auth, chirps: initialChirps }) {
                                         />
                                         <motion.button
                                             onClick={() => handleCommentSubmit(chirp.id)}
-                                            className="flex items-center text-gray-100 dark:text-gray-300 bg-gray-800 dark:bg-gray-700 px-4 py-3 rounded-md shadow-sm hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                                            className="p-2 rounded-full text-gray-500 dark:text-gray-300 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
                                             whileTap={{ scale: 0.95 }}
+                                            title="Add Comment"
                                         >
-                                            Comment
+                                            <FaPaperPlane size={25} />
                                         </motion.button>
                                     </div>
                                     <div className="space-y-6">
