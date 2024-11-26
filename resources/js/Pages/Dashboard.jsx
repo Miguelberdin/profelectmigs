@@ -78,11 +78,15 @@ export default function Dashboard({ auth }) {
             },
         ],
     };
-    
+
 
     return (
         <AuthenticatedLayout
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>}
+        header={
+            <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                Dashboard
+            </h2>
+        }
         >
             <Head title="Dashboard" />
 
@@ -138,14 +142,14 @@ export default function Dashboard({ auth }) {
                                 <>
                                     {stats.latestComments.slice(0, showAllComments ? stats.latestComments.length : 1).map((comment, index) => (
                                         <div key={index} className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow-md">
-                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-1 sm:space-y-0 mb-2">
+                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
                                                 <div className="flex items-center space-x-3">
                                                     <div className="w-9 h-9 flex items-center justify-center rounded-full bg-blue-600 text-white font-bold text-lg">
                                                         {comment.user ? comment.user.charAt(0).toUpperCase() : 'U'}
                                                     </div>
                                                     <p className="font-semibold text-lg text-gray-800 dark:text-gray-200">{comment.user}</p>
                                                 </div>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 sm:mt-0 sm:ml-4" style={{ marginLeft: '3rem' }}>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.25 ml-12 sm:mt-0 sm:ml-4">
                                                     {comment.created_at ? moment(comment.created_at).format('MMMM Do YYYY, h:mm:ss a') : 'Unknown Date'}
                                                 </p>
                                             </div>
